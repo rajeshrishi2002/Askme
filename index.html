@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASK ME</title>
+
+    <link  rel="stylesheet" href="style.css">
+</head>
+<body>  
+      <section class="section section--emoji">
+        <div class="wrapper">
+          <div id="emoji-bubble" class="bubble"></div>
+          <div id="emoji-text" class="text-wrapper"></div>
+        </div>
+        <div id="emoji" class="emoji">
+          <span></span>
+        </div>
+      </section>
+      
+      <section class="section section--user">
+        <div class="wrapper">
+          <div id="user-bubble" class="bubble"></div>
+          <textarea id="user-text" class="textarea text-wrapper" aria-describedby="submit-button" rows="1" cols="5"></textarea>
+          <button id="submit-button" aria-label="Press enter to submit" class="submit-button" disabled>enter</button>
+        </div>
+      </section>
+      
+      <svg class="squiggle-vision-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="squiggle-0">
+            <feTurbulence baseFrequency="0.025" numOctaves="3" result="noise" seed="0" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+          </filter>
+          <filter id="squiggle-1">
+            <feTurbulence baseFrequency="0.025 0" numOctaves="3" result="noise" seed="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+          </filter>
+          <filter id="squiggle-2">
+            <feTurbulence baseFrequency="0.025" numOctaves="3" result="noise" seed="2" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+          </filter>
+          <filter id="squiggle-3">
+            <feTurbulence baseFrequency="0.025 0" numOctaves="3" result="noise" seed="2" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+          </filter>
+          <filter id="squiggle-4">
+            <feTurbulence baseFrequency="0.025" numOctaves="3" result="noise" seed="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+          </filter>
+        </defs>
+      </svg>
+</body>
+<script>
+
+const emojiContainer = document.getElementById("emoji");
+const emojiContainerInner = emojiContainer.querySelector("span");
+const emojiText = document.getElementById("emoji-text");
+const userText = document.getElementById("user-text");
+const submitButton = document.getElementById("submit-button");
+const talkingClassName = "is-talking";
+
+const initEmojiBubble = {
+  text: "Ask me any question?",
+  emoji: {
+    talking: "😊🥰 ",
+    resting: "😊"
+  }
+};
+
+const answers = [
+  {
+    text: "Kandipa",
+    emoji: {
+      talking: "😊😄",
+      resting: "😁"
+    }
+  },
+  {
+    text: "solliye aaganuma",
+    emoji: {
+      talking: "😊😄",
+      resting: "🤫"
+    }
+  },
+  {
+    text: "Better not tell you now",
+    emoji: {
+      talking: "🙂😮",
+      resting: "🤐"
+    }
+  },
+  {
+    text: "ama ama ama",
+    emoji: {
+      talking: "😐😮",
+      resting: "🤗"
+    }
+  },
+  {
+    text: "Concentrate and ask again",
+    emoji: {
+      talking: "😐😮",
+      resting: "🤔"
+    }
+  },
+  {
+    text: "yesssssssss",
+    emoji: {
+      talking: "🙂😮",
+      resting: "😁"
+    }
+  },
+  {
+    text: "It is decidedly so",
+    emoji: {
+      talking: "😊😄",
+      resting: "🤩"
+    }
+  },
+  {
+    text: "ada ama nga",
+    emoji: {
+      talking: "😊😄",
+      resting: "😀"
+    }
+  },
+  {
+    text: "Most likely",
+    emoji: {
+      talking: "😊😄",
+      resting: "😉"
+    }
+  },
+  {
+    text: "My reply is no,summa",
+    emoji: {
+      talking: "🙁😮",
+      resting: "😁"
+    }
+  },
+  {
+    text: "Haan",
+    emoji: {
+      talking: "🙁😮",
+      resting: "😇"
+    }
+  },
+  {
+    text: "sollamudiyathu",
+    emoji: {
+      talking: "🙁😮",
+      resting: "🤐"
+    }
+  },
+  {
+    text: "Reply pannanuma",
+    emoji: {
+      talking: "😐😮",
+      resting: "😶"
+    }
+  },
+  {
+    text: "no sollamudiyathey",
+    emoji: {
+      talking: "🙂😮",
+      resting: "🥰"
+    }
+  },
+  {
+    text: "Very doubtful",
+    emoji: {
+      talking: "😣😫",
+      resting: "🙄"
+    }
+  },
+  {
+    text: "Without a doubt",
+    emoji: {
+      talking: "😊😄",
+      resting: "😍"
+    }
+  },
+  {
+    text: "Yes",
+    emoji: {
+      talking: "😊😄",
+      resting: "😇"
+    }
+  },
+  {
+    text: "Yes – definitely",
+    emoji: {
+      talking: "😊😄",
+      resting: "❤️"
+    }
+  },
+  {
+    text: "yosikiren",
+    emoji: {
+      talking: "🙂😮",
+      resting: "🤔"
+    }
+  }
+];
+
+const talkingAnimCallback = (emoji) => {
+  emojiContainerInner.innerText = emoji.resting;
+  setTimeout(() => {
+    emojiContainer.removeEventListener("animationend", talkingAnimCallback);
+    document.documentElement.classList.remove(talkingClassName);
+    submitButton.disabled = false;
+    userText.disabled = false;
+  }, 200);
+};
+
+const getEmojiBubbleText = ({ text, emoji }) => {
+  document.documentElement.classList.add(talkingClassName);
+
+  emojiText.innerHTML = [...text]
+    .map((letter, i) => `<span style='--i: ${i}'>${letter}</span>`)
+    .join("");
+  emojiText.setAttribute("aria-label", text);
+  emojiContainerInner.innerText = emoji.talking;
+  emojiContainer.style.setProperty("--iteration-count", Math.floor(text.length / 2));
+  emojiContainer.addEventListener("animationend", () => talkingAnimCallback(emoji));
+};
+
+const handleQuestionSubmission = () => {
+  userText.blur();
+  submitButton.disabled = true;
+  userText.disabled = true;
+  getEmojiBubbleText(answers[Math.floor(Math.random() * answers.length)]);
+};
+
+const handleUserTextParentValue = () => {
+  userText.parentNode.dataset.value = userText.value;
+}
+
+const init = () => {
+  userText.value = 'Ask...';
+  handleUserTextParentValue();
+  getEmojiBubbleText(initEmojiBubble);
+  document.documentElement.classList.remove("hide");
+};
+
+userText.addEventListener("keydown", (e) => {
+  if (userText.contentEditable && e.key === "Enter") {
+    e.preventDefault();
+    handleQuestionSubmission();
+  }
+});
+
+userText.addEventListener("focus", (e) => userText.select());
+userText.addEventListener("input", (e) => handleUserTextParentValue());
+
+submitButton.addEventListener("click", () => {
+  if (!submitButton.disabled) {
+    handleQuestionSubmission();
+  }
+});
+
+init();
+
+</script>
+</html>
